@@ -1,13 +1,6 @@
-import  express  from 'express';
-import { PrismaClient } from '@prisma/client';
-import  userRoutes  from './api/Routes/user.routes.js';
+import app from './app.js';
 
-const app = express();
-const port = 3000;
-const prisma = new PrismaClient();
-
-app.use(express.json());
-app.use('/api', userRoutes);
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
