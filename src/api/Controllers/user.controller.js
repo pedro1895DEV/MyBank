@@ -12,9 +12,13 @@ export const createUser = async (req, res) => {
     } catch (error) {
         console.error(error.message); 
         if (error.message === 'Email or CPF/CNPJ is already being used') {
-            return res.status(409).json({ message: error.message });
+            return res.status(409).json({ 
+                message: error.message 
+            });
         }
-        return res.status(500).json({ message: 'Error on server' });
+        return res.status(500).json({ 
+            message: 'Error on server.' 
+        });
     }
 };
 
