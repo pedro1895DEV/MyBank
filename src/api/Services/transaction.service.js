@@ -24,6 +24,7 @@ export class TransactionService {
     }
 
     async transaction (transactionData) {
+        const url = 'https://mocki.io/v1/61cec5cd-0878-47e9-8e33-98be767f742';
         const { value, payerId, payeeId } = transactionData;
         const payer = await this.prisma.user.findUnique({
             where: {
@@ -56,38 +57,44 @@ export class TransactionService {
         }
 
         if (payer.wallet.balance < value) {
-            throw new Error ('Insufficient balance.')
+            throw new Error ('Insufficient balance.');
         }
 
-        await this.prisma.wallet.update({
-            where: {
-                userId: payerId,
-            },
-            data: {
-                balance: {
-                    decrement: value,
-                }
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('External API error.');
             }
-        });
 
-        await this.prisma.wallet.update({
-            where: {
-                userId: payeeId,
-            },
-            data: {
-                balance: {
-                    increment: value,
-                }
+            const authData = await response.json();
+            if (authData.message != 'Authorized') {
+                throw new Error('Unauthorized transaction.');
             }
-        });
+        } catch (error) {
+            console.log(error);
+            throw new Error('External service communication error.');
+        }
 
-        const newTransaction = await this.prisma.transaction.create({
-            data: {
-                value: value,
-                payerId: payerId,
-                payeeId: payeeId,
-            }, 
+        const newTransaction = await this.prisma.$transaction(async (tx) => {
+            await tx.wallet.update({
+                where: {userId: payerId},
+                data: {balance: {decrement: value } },
+            });
 
+            await tx.wallet.update({
+                where: {userId: payeeId},
+                data: {balance: {increment: value } },
+            });
+
+            const transactionRecord = await tx.transaction.create({
+                data: {
+                    value: value,
+                    payerId: payerId,
+                    payeeId: payeeId,
+                }
+            });
+
+            return transactionRecord;
         });
         return newTransaction;
     }

@@ -39,6 +39,27 @@ export const transferValue = async (req, res) => {
             });
         }
 
+        if (error.message === 'Unauthorized transaction.') {
+            return res.status(403).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        if (error.message === 'External service communication error.') {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        if (error.message === 'External API error.') {
+            return res.status(502).json({
+                success: false,
+                message: error.message
+            });
+        }
+
         return res.status(500).json({
             success: false,  
             message: 'Error on server.' 
