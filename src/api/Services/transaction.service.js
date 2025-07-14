@@ -24,7 +24,8 @@ export class TransactionService {
     }
 
     async transaction (transactionData) {
-        const url = 'https://mocki.io/v1/61cec5cd-0878-47e9-8e33-98be767f742';
+        const url = process.env.url;
+        const urlNotification = process.env.urlNotification;
         const { value, payerId, payeeId } = transactionData;
         const payer = await this.prisma.user.findUnique({
             where: {
@@ -93,6 +94,17 @@ export class TransactionService {
                     payeeId: payeeId,
                 }
             });
+
+            try {
+                const response = await fetch(urlNotification);
+                if (response.ok) {
+                    console.log('Notification sented.')
+                } else {
+                    throw new Error('Couldnt sent notification.');
+                }
+            } catch (error) {
+                console.log(error);
+            }
 
             return transactionRecord;
         });
