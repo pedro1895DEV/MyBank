@@ -68,12 +68,6 @@ este desafio, utilize este mock que simula o serviço:
    ```
 6. Acesse a API através do endereço `http://localhost:3000`.
 
-## Testes
-Para garantir a qualidade do código, foram implementados testes unitários e de integração utilizando o Jest. Para executar os testes, utilize o seguinte comando:
-
-```bash
-npm test
-```
 
 ## Documentação da API
 A documentação da API está disponível no arquivo `api-docs.md`, onde você encontrará detalhes sobre os endpoints, parâmetros e exemplos de requisições e respostas.
@@ -82,4 +76,3 @@ A documentação da API está disponível no arquivo `api-docs.md`, onde você e
 - Express
 - PostgreSQL
 - Prisma
-- Jest
